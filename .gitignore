@@ -1,0 +1,15 @@
+# Ignore JMeter installation
+jmeter/apache-jmeter-5.6.3/
+
+# Ignore generated reports
+jmeter/results/
+jmeter/reports/
+
+# Ignore JMeter result files
+*.jtl
+
+# Ignore log files
+*.log
+
+# Ignore backup files
+jmeter/apache-jmeter-5.6.3/backups/
