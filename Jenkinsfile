@@ -7,22 +7,24 @@ pipeline {
         PROJECT_HOME = "C:\\Users\\DELL\\Downloads\\Jmeter-Practice\\jmeter"
     }
 
-  stage('Run JMeter Test') {
-    steps {
-        bat """
-        cd /d "%PROJECT_HOME%"
+    stages {
 
-        if exist reports rmdir /s /q reports
-        mkdir reports
+        stage('Run JMeter Test') {
+            steps {
+                bat """
+                cd /d "%PROJECT_HOME%"
 
-        "%JMETER_HOME%\\bin\\jmeter.bat" -n
-        -t "%PROJECT_HOME%\\Enterprise_API_Performance_Framework_new.jmx"
-        -l "%PROJECT_HOME%\\results\\results.jtl"
-        -e
-        -o "%PROJECT_HOME%\\reports"
-        """
-    }
-}
+                if exist reports rmdir /s /q reports
+                mkdir reports
+
+                "%JMETER_HOME%\\bin\\jmeter.bat" -n ^
+                -t "%PROJECT_HOME%\\Enterprise_API_Performance_Framework_new.jmx" ^
+                -l "%PROJECT_HOME%\\results\\results.jtl" ^
+                -e ^
+                -o "%PROJECT_HOME%\\reports"
+                """
+            }
+        }
 
         stage('Archive Results') {
             steps {
