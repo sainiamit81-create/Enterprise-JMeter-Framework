@@ -81,14 +81,23 @@ pipeline {
             }
         }
 
-        stage('Archive Results') {
-            steps {
-                archiveArtifacts artifacts: 'jmeter/results/*.jtl', fingerprint: true, allowEmptyArchive: true
-                archiveArtifacts artifacts: 'jmeter/reports/**', fingerprint: true, allowEmptyArchive: true
+       stage('Publish Report') {
+    steps {
 
-                echo 'JMeter execution completed successfully.'
-            }
-        }
+        archiveArtifacts artifacts: 'jmeter/results/*.jtl', allowEmptyArchive: true
+
+        publishHTML(target: [
+            allowMissing: false,
+            alwaysLinkToLastBuild: true,
+            keepAll: true,
+            reportDir: 'jmeter/reports',
+            reportFiles: 'index.html',
+            reportName: 'JMeter HTML Report'
+        ])
+
+        echo 'JMeter execution completed successfully.'
+    }
+}
     }
 
     post {
