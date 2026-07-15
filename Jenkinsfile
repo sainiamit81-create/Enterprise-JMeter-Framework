@@ -36,7 +36,7 @@ pipeline {
 
     environment {
         PROJECT_HOME = "C:\\Users\\DELL\\Documents\\Enterprise-JMeter-Framework\\jmeter"
-        JMETER_HOME = "C:\\Users\\DELL\\Documents\\Enterprise-JMeter-Framework\\jmeter\\apache-jmeter-5.6.3"
+        JMETER_HOME  = "C:\\Users\\DELL\\Documents\\Enterprise-JMeter-Framework\\jmeter\\apache-jmeter-5.6.3"
     }
 
     stages {
@@ -85,21 +85,24 @@ pipeline {
             steps {
                 archiveArtifacts artifacts: 'jmeter/results/*.jtl', fingerprint: true, allowEmptyArchive: true
                 archiveArtifacts artifacts: 'jmeter/reports/**', fingerprint: true, allowEmptyArchive: true
+
+                echo 'JMeter execution completed successfully.'
             }
         }
     }
 
     post {
+
         always {
-            echo "Performance Test Completed"
+            echo 'Performance Test Completed'
         }
 
         success {
-            echo "Pipeline Successful"
+            echo 'Pipeline Successful'
         }
 
         failure {
-            echo "Pipeline Failed"
+            echo 'Pipeline Failed'
         }
     }
 }
