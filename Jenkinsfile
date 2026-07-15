@@ -65,21 +65,23 @@ pipeline {
         }
 
         stage('Run JMeter Test') {
-            steps {
-                bat '''
-                cd /d "%PROJECT_HOME%"
+    steps {
+        bat """
+        cd /d "${PROJECT_HOME}"
 
-                "%JMETER_HOME%\\bin\\jmeter.bat" -n ^
-                -t "%PROJECT_HOME%\\%TEST_PLAN%" ^
-                -Jusers=%USERS% ^
-                -Jrampup=%RAMPUP% ^
-                -Jduration=%DURATION% ^
-                -l "%PROJECT_HOME%\\results\\results.jtl" ^
-                -e ^
-                -o "%PROJECT_HOME%\\reports"
-                '''
-            }
-        }
+        "${JMETER_HOME}\\bin\\jmeter.bat" -n
+        -t "${PROJECT_HOME}\\${params.TEST_PLAN}"
+        -Jusers=${params.USERS}
+        -Jrampup=${params.RAMPUP}
+        -Jduration=${params.DURATION}
+        -l "${PROJECT_HOME}\\results\\results.jtl"
+        -e ^
+        -o "${PROJECT_HOME}\\reports"
+        """
+
+        echo 'JMeter execution completed successfully.'
+    }
+}
 
        stage('Publish Report') {
     steps {
