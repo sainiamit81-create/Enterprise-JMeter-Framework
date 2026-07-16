@@ -151,6 +151,27 @@ pipeline {
 
             }
         }
+        stage('Send Email Report') {
+    steps {
+        emailext(
+            subject: "JMeter Performance Test Report - Build #${BUILD_NUMBER}",
+            body: """
+                <h2>Performance Test Completed Successfully</h2>
+
+                <p><b>Environment:</b> ${params.ENV}</p>
+                <p><b>Users:</b> ${params.USERS}</p>
+                <p><b>Ramp-up:</b> ${params.RAMPUP}</p>
+                <p><b>Duration:</b> ${params.DURATION}</p>
+
+                <p>See the attached JMeter HTML report.</p>
+
+                <p>Build URL: ${BUILD_URL}</p>
+            """,
+            mimeType: 'text/html',
+            to: 'saini.amit81@gmail.com'
+        )
+    }
+}
 
     }
 
