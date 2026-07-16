@@ -155,20 +155,79 @@ pipeline {
     steps {
         emailext(
             subject: "JMeter Performance Test Report - Build #${BUILD_NUMBER}",
-            body: """
-                <h2>Performance Test Completed Successfully</h2>
 
-                <p><b>Environment:</b> ${params.ENV}</p>
-                <p><b>Users:</b> ${params.USERS}</p>
-                <p><b>Ramp-up:</b> ${params.RAMPUP}</p>
-                <p><b>Duration:</b> ${params.DURATION}</p>
-
-                <p>See the attached JMeter HTML report.</p>
-
-                <p>Build URL: ${BUILD_URL}</p>
-            """,
             mimeType: 'text/html',
-            to: 'saini.amit81@gmail.com'
+
+            to: 'saini.amit81@gmail.com',
+
+            attachmentsPattern: 'jmeter/reports.zip',
+
+            body: """
+            <html>
+
+            <body>
+
+            <h2>Performance Test Completed Successfully</h2>
+
+            <table border="1" cellpadding="8">
+
+            <tr>
+                <th>Environment</th>
+                <td>${params.ENV}</td>
+            </tr>
+
+            <tr>
+                <th>Users</th>
+                <td>${params.USERS}</td>
+            </tr>
+
+            <tr>
+                <th>Ramp-up</th>
+                <td>${params.RAMPUP}</td>
+            </tr>
+
+            <tr>
+                <th>Duration</th>
+                <td>${params.DURATION}</td>
+            </tr>
+
+            <tr>
+                <th>Status</th>
+                <td><b>SUCCESS</b></td>
+            </tr>
+
+            </table>
+
+            <br>
+
+            <b>Attached:</b>
+
+            <ul>
+
+            <li>JMeter HTML Report (ZIP)</li>
+
+            </ul>
+
+            <br>
+
+            Build URL:
+            <br>
+
+            <a href="${BUILD_URL}">
+            ${BUILD_URL}
+            </a>
+
+            <br><br>
+
+            Regards,
+            <br>
+
+            Performance Engineering Team
+
+            </body>
+
+            </html>
+            """
         )
     }
 }
