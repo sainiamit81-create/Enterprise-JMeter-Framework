@@ -174,14 +174,16 @@ pipeline {
 }
 stage('Create ZIP Report') {
     steps {
-
-        zip zipFile: 'jmeter/reports.zip',
-            dir: 'jmeter/reports'
+        powershell '''
+        Compress-Archive `
+        -Path "$env:WORKSPACE\\jmeter\\reports\\*" `
+        -DestinationPath "$env:WORKSPACE\\jmeter\\reports.zip" `
+        -Force
+        '''
 
         archiveArtifacts artifacts: 'jmeter/reports.zip'
 
         echo 'JMeter HTML Report ZIP created successfully.'
-
     }
 }
 
