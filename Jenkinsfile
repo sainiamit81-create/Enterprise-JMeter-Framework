@@ -172,6 +172,18 @@ pipeline {
         )
     }
 }
+stage('Create ZIP Report') {
+    steps {
+
+        zip zipFile: 'jmeter/reports.zip',
+            dir: 'jmeter/reports'
+
+        archiveArtifacts artifacts: 'jmeter/reports.zip'
+
+        echo 'JMeter HTML Report ZIP created successfully.'
+
+    }
+}
 
     }
 
