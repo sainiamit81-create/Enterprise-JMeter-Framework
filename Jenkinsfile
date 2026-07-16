@@ -2,17 +2,22 @@ pipeline {
 
     agent any
 
+    options {
+        timestamps()
+    }
+
     parameters {
+
         choice(
             name: 'ENV',
             choices: ['DEV', 'UAT', 'PROD'],
-            description: 'Select Environment'
+            description: 'Select Target Environment'
         )
 
         string(
             name: 'USERS',
             defaultValue: '100',
-            description: 'Virtual Users'
+            description: 'Number of Virtual Users'
         )
 
         string(
@@ -24,7 +29,7 @@ pipeline {
         string(
             name: 'DURATION',
             defaultValue: '300',
-            description: 'Duration (seconds)'
+            description: 'Test Duration (seconds)'
         )
 
         string(
@@ -35,24 +40,35 @@ pipeline {
     }
 
     environment {
-        PROJECT_HOME = "C:\\Users\\DELL\\Documents\\Enterprise-JMeter-Framework\\jmeter"
-        JMETER_HOME  = "C:\\Users\\DELL\\Documents\\Enterprise-JMeter-Framework\\jmeter\\apache-jmeter-5.6.3"
+
+        PROJECT_HOME = "${WORKSPACE}\\jmeter"
+        JMETER_HOME  = "${WORKSPACE}\\jmeter\\apache-jmeter-5.6.3"
+
     }
 
     stages {
 
         stage('Checkout Information') {
+
             steps {
+
+                echo "========================================="
+                echo "Enterprise JMeter Performance Pipeline"
+                echo "========================================="
+
                 echo "Environment : ${params.ENV}"
                 echo "Users       : ${params.USERS}"
                 echo "Ramp-up     : ${params.RAMPUP}"
                 echo "Duration    : ${params.DURATION}"
                 echo "Test Plan   : ${params.TEST_PLAN}"
+
             }
         }
 
         stage('Prepare Workspace') {
+
             steps {
+
                 bat '''
                 cd /d "%PROJECT_HOME%"
 
@@ -61,59 +77,91 @@ pipeline {
 
                 mkdir reports
                 '''
+
+                echo "Workspace Prepared Successfully."
+
             }
         }
 
-       stage('Run JMeter Test') {
-    steps {
-        bat """
-        cd /d "${PROJECT_HOME}"
+        stage('Run JMeter Test') {
 
-        "${JMETER_HOME}\\bin\\jmeter.bat" -n ^
-        -t "${PROJECT_HOME}\\${params.TEST_PLAN}" ^
-        -Jusers=${params.USERS} ^
-        -Jrampup=${params.RAMPUP} ^
-        -Jduration=${params.DURATION} ^
-        -l "${PROJECT_HOME}\\results\\results.jtl" ^
-        -e ^
-        -o "${PROJECT_HOME}\\reports"
-        """
+            steps {
 
-        echo 'JMeter execution completed successfully.'
-    }
-}
+                bat """
+                cd /d "${env.PROJECT_HOME}"
 
-       stage('Publish Report') {
-    steps {
+                "${env.JMETER_HOME}\\bin\\jmeter.bat" -n ^
+                -t "${env.PROJECT_HOME}\\${params.TEST_PLAN}" ^
+                -Jusers=${params.USERS} ^
+                -Jrampup=${params.RAMPUP} ^
+                -Jduration=${params.DURATION} ^
+                -l "${env.PROJECT_HOME}\\results\\results.jtl" ^
+                -e ^
+                -o "${env.PROJECT_HOME}\\reports"
+                """
 
-        archiveArtifacts artifacts: 'jmeter/results/*.jtl', allowEmptyArchive: true
+                echo "JMeter Test Execution Completed Successfully."
 
-        publishHTML(target: [
-            allowMissing: false,
-            alwaysLinkToLastBuild: true,
-            keepAll: true,
-            reportDir: 'jmeter/reports',
-            reportFiles: 'index.html',
-            reportName: 'JMeter HTML Report'
-        ])
+            }
+        }
 
-        echo 'JMeter execution completed successfully.'
-    }
-}
+        stage('Archive Results') {
+
+            steps {
+
+                archiveArtifacts(
+                    artifacts: 'jmeter/results/results.jtl',
+                    fingerprint: true,
+                    allowEmptyArchive: false
+                )
+
+                echo "JTL File Archived Successfully."
+
+            }
+        }
+
+        stage('Publish HTML Report') {
+
+            steps {
+
+                publishHTML(target: [
+
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll: true,
+                    reportDir: 'jmeter/reports',
+                    reportFiles: 'index.html',
+                    reportName: 'JMeter HTML Report'
+
+                ])
+
+                echo "JMeter HTML Report Published Successfully."
+
+            }
+        }
+
     }
 
     post {
 
         always {
-            echo 'Performance Test Completed'
+
+            echo "========================================="
+            echo "Performance Test Completed"
+            echo "========================================="
+
         }
 
         success {
-            echo 'Pipeline Successful'
+
+            echo "Pipeline Executed Successfully."
+
         }
 
         failure {
-            echo 'Pipeline Failed'
+
+            echo "Pipeline Failed."
+
         }
     }
 }
