@@ -63,6 +63,20 @@ pipeline {
             }
         }
 
+        stage('Build Information') {
+    steps {
+        script {
+            currentBuild.displayName =
+                "#${env.BUILD_NUMBER} | ${params.ENV} | ${params.USERS} Users"
+
+            currentBuild.description =
+                "Test Plan: ${params.TEST_PLAN}\n" +
+                "Ramp-up: ${params.RAMPUP}\n" +
+                "Duration: ${params.DURATION}"
+        }
+    }
+}
+
         stage('Prepare Workspace') {
 
             steps {
