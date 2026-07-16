@@ -40,11 +40,9 @@ pipeline {
     }
 
     environment {
-
-        PROJECT_HOME = "${WORKSPACE}\\jmeter"
-        JMETER_HOME  = "${WORKSPACE}\\jmeter\\apache-jmeter-5.6.3"
-
-    }
+    PROJECT_HOME = "${WORKSPACE}\\jmeter"
+    JMETER_HOME  = "C:\\Users\\DELL\\Documents\\Enterprise-JMeter-Framework\\jmeter\\apache-jmeter-5.6.3"
+}
 
     stages {
 
