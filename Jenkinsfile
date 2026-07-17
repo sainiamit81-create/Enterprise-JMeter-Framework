@@ -96,26 +96,28 @@ pipeline {
         }
 
         stage('Run JMeter Test') {
+    steps {
+        bat """
+        cd /d "${env.PROJECT_HOME}"
 
-            steps {
+        if exist reports rmdir /s /q reports
+        if exist results\\results.jtl del /f /q results\\results.jtl
 
-                bat """
-                cd /d "${env.PROJECT_HOME}"
+        mkdir reports
 
-                "${env.JMETER_HOME}\\bin\\jmeter.bat" -n ^
-                -t "${env.PROJECT_HOME}\\${params.TEST_PLAN}" ^
-                -Jusers=${params.USERS} ^
-                -Jrampup=${params.RAMPUP} ^
-                -Jduration=${params.DURATION} ^
-                -l "${env.PROJECT_HOME}\\results\\results.jtl" ^
-                -e ^
-                -o "${env.PROJECT_HOME}\\reports"
-                """
+        "${env.JMETER_HOME}\\bin\\jmeter.bat" -n ^
+        -t "${env.PROJECT_HOME}\\${params.TEST_PLAN}" ^
+        -Jusers=${params.USERS} ^
+        -Jrampup=${params.RAMPUP} ^
+        -Jduration=${params.DURATION} ^
+        -l "${env.PROJECT_HOME}\\results\\results.jtl" ^
+        -e ^
+        -o "${env.PROJECT_HOME}\\reports"
 
-                echo "JMeter Test Execution Completed Successfully."
-
-            }
-        }
+        powershell Compress-Archive -Path reports\\* -DestinationPath reports.zip -Force
+        """
+    }
+}
 
         stage('Archive Results') {
 
